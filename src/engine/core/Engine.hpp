@@ -6,16 +6,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Camera.hpp"
-#include "graphics/Shader.hpp"
-#include "graphics/VertexBuffer.hpp"
-#include "graphics/IndexBuffer.hpp"
-#include "graphics/VertexArray.hpp"
-#include "graphics/Texture.hpp"
+#include "engine/scene/Camera.hpp"
+#include "engine/renderer/Shader.hpp"
+#include "engine/renderer/Model.hpp"
 
 #include <memory>
 
-enum AppState
+enum class AppState
 {
     DebugMode,
     GameMode,
@@ -27,8 +24,12 @@ class Engine
     Engine(const int width = 800, const int height = 600);
     ~Engine();
 
-    Engine(const Engine &) = delete;            // Delete copy constructor
-    Engine &operator=(const Engine &) = delete; // Delete copy assignment
+    // Delete copy and move semantics
+    Engine(const Engine &) = delete;
+    Engine &operator=(const Engine &) = delete;
+
+    Engine(Engine &&) = delete;
+    Engine &operator=(Engine &&) = delete;
 
     void Run();
 
@@ -54,6 +55,10 @@ class Engine
     int width, height;
     bool quit = false;
 
+    // Test Variable
+    bool drawGeometry = false;
+    bool spinModel = false;
+
     AppState state = AppState::DebugMode;
 
     // Timing
@@ -64,9 +69,5 @@ class Engine
 
     // Resource
     std::unique_ptr<Shader> shader;
-    std::unique_ptr<VertexArray> vao;
-    std::unique_ptr<VertexBuffer> vbo;
-    std::unique_ptr<IndexBuffer> ebo;
-    std::unique_ptr<Texture> textureBrick;
-    std::unique_ptr<Texture> textureCat;
+    std::unique_ptr<Model> backpack;
 };

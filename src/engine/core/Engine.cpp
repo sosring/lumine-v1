@@ -1,59 +1,9 @@
 #include "Engine.hpp"
-#include "engine/Camera.hpp"
+
 #include <imgui.h>
 #include <imgui_impl_sdl3.h>
 #include <imgui_impl_opengl3.h>
-
-/* clang-format off */
-const float vertices[] = {
-    // Position              // Color             // UV
-
-    // Front (+Z)
-    -0.5f, -0.5f,  0.5f,     1.0f, 0.0f, 0.0f,    0.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,     1.0f, 0.0f, 0.0f,    1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,     1.0f, 0.0f, 0.0f,    1.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f,     1.0f, 0.0f, 0.0f,    0.0f, 1.0f,
-
-    // Back (-Z)
-     0.5f, -0.5f, -0.5f,     0.0f, 1.0f, 0.0f,    0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,     0.0f, 1.0f, 0.0f,    1.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,     0.0f, 1.0f, 0.0f,    1.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,     0.0f, 1.0f, 0.0f,    0.0f, 1.0f,
-
-    // Left (-X)
-    -0.5f, -0.5f, -0.5f,     0.0f, 0.0f, 1.0f,    0.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,     0.0f, 0.0f, 1.0f,    1.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,     0.0f, 0.0f, 1.0f,    1.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f,     0.0f, 0.0f, 1.0f,    0.0f, 1.0f,
-
-    // Right (+X)
-     0.5f, -0.5f,  0.5f,     1.0f, 1.0f, 0.0f,    0.0f, 0.0f,
-     0.5f, -0.5f, -0.5f,     1.0f, 1.0f, 0.0f,    1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,     1.0f, 1.0f, 0.0f,    1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,     1.0f, 1.0f, 0.0f,    0.0f, 1.0f,
-
-    // Bottom (-Y)
-    -0.5f, -0.5f, -0.5f,     1.0f, 0.0f, 1.0f,    0.0f, 0.0f,
-     0.5f, -0.5f, -0.5f,     1.0f, 0.0f, 1.0f,    1.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,     1.0f, 0.0f, 1.0f,    1.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,     1.0f, 0.0f, 1.0f,    0.0f, 1.0f,
-
-    // Top (+Y)
-    -0.5f,  0.5f,  0.5f,     0.0f, 1.0f, 1.0f,    0.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,     0.0f, 1.0f, 1.0f,    1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,     0.0f, 1.0f, 1.0f,    1.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f,     0.0f, 1.0f, 1.0f,    0.0f, 1.0f,
-};
-
-const GLuint indices[] = {
-    0, 1, 2, 2, 3, 0,         // Front
-    4, 5, 6, 6, 7, 4,         // Back
-    8, 9,10,10,11, 8,         // Left
-   12,13,14,14,15,12,         // Right
-   16,17,18,18,19,16,         // Bottom
-   20,21,22,22,23,20          // Top
-};
-/* clang-format on */
+#include <memory>
 
 Engine::Engine(int width, int height) : width(width), height(height)
 {
@@ -82,7 +32,7 @@ void Engine::InitWindow()
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
-    window = SDL_CreateWindow("Lumine", width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+    window = SDL_CreateWindow("Lumine-v1-GL", width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     if (!window)
     {
         SDL_Log("Failed to create window %s", SDL_GetError());
@@ -114,22 +64,8 @@ void Engine::InitGL()
 
 void Engine::InitScene()
 {
-    shader = std::make_unique<Shader>("res/shaders/box.vs", "res/shaders/box.fs");
-
-    vao = std::make_unique<VertexArray>();
-    vbo = std::make_unique<VertexBuffer>(vertices, sizeof(vertices));
-    ebo = std::make_unique<IndexBuffer>(indices, sizeof(indices));
-
-    vao->LinkVertexBuffer(*vbo, 0, 3, GL_FLOAT, sizeof(GLfloat) * 8, (void *)0);
-    vao->LinkVertexBuffer(*vbo, 1, 3, GL_FLOAT, sizeof(GLfloat) * 8, (void *)(3 * sizeof(float)));
-    vao->LinkVertexBuffer(*vbo, 2, 2, GL_FLOAT, sizeof(GLfloat) * 8, (void *)(6 * sizeof(float)));
-
-    shader->Use();
-    textureBrick = std::make_unique<Texture>("res/textures/brick.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
-    shader->setInt("tex0", 0);
-
-    textureCat = std::make_unique<Texture>("res/textures/pop_cat.png", GL_TEXTURE_2D, GL_TEXTURE1, GL_RGBA, GL_UNSIGNED_BYTE);
-    shader->setInt("tex1", 1);
+    shader = std::make_unique<Shader>("res/shaders/object.vs", "res/shaders/object.fs");
+    backpack = std::make_unique<Model>("res/models/backpack/backpack.obj");
 };
 
 void Engine::InitImGui()
@@ -155,15 +91,18 @@ void Engine::DrawScene()
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
     glm::mat4 view = camera.GetViewMatrix();
     glm::mat4 model = glm::mat4(1.0f);
+    if (spinModel)
+        model = glm::rotate(model, static_cast<float>(SDL_GetTicks() / 1000.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
     shader->Use();
     shader->setMat4("model", model);
     shader->setMat4("view", view);
     shader->setMat4("projection", projection);
 
-    vao->Bind();
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, nullptr);
+    glPolygonMode(GL_FRONT_AND_BACK, drawGeometry ? GL_LINE : GL_FILL);
+
+    if (backpack)
+        backpack->Draw(*shader);
 };
 
 void Engine::DrawDebugUI()
@@ -172,9 +111,14 @@ void Engine::DrawDebugUI()
     ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();
 
-    // ImGui::ShowDemoWindow();
-
     ImGui::Begin("Debug");
+
+    if (ImGui::CollapsingHeader("Model", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        ImGui::Checkbox("Draw Geometry", &drawGeometry);
+        ImGui::Checkbox("Spin Model", &spinModel);
+    }
+
     camera.DebugUI();
     ImGui::End();
 
@@ -199,20 +143,23 @@ void Engine::Update(float dt)
     // Update camera and scene
 
     // Camera Keyboard Movement
-    const bool *keys = SDL_GetKeyboardState(nullptr);
+    if (state == AppState::GameMode)
+    {
+        const bool *keys = SDL_GetKeyboardState(nullptr);
 
-    if (keys[SDL_SCANCODE_W])
-        camera.ProcessKeyboardMovement(dt, Direction::Forward);
-    if (keys[SDL_SCANCODE_S])
-        camera.ProcessKeyboardMovement(dt, Direction::BackWard);
-    if (keys[SDL_SCANCODE_A])
-        camera.ProcessKeyboardMovement(dt, Direction::Left);
-    if (keys[SDL_SCANCODE_D])
-        camera.ProcessKeyboardMovement(dt, Direction::Right);
-    if (keys[SDL_SCANCODE_SPACE])
-        camera.ProcessKeyboardMovement(dt, Direction::Up);
-    if (keys[SDL_SCANCODE_LSHIFT])
-        camera.ProcessKeyboardMovement(dt, Direction::Down);
+        if (keys[SDL_SCANCODE_W])
+            camera.ProcessKeyboardMovement(dt, Direction::Forward);
+        if (keys[SDL_SCANCODE_S])
+            camera.ProcessKeyboardMovement(dt, Direction::BackWard);
+        if (keys[SDL_SCANCODE_A])
+            camera.ProcessKeyboardMovement(dt, Direction::Left);
+        if (keys[SDL_SCANCODE_D])
+            camera.ProcessKeyboardMovement(dt, Direction::Right);
+        if (keys[SDL_SCANCODE_SPACE])
+            camera.ProcessKeyboardMovement(dt, Direction::Up);
+        if (keys[SDL_SCANCODE_LSHIFT])
+            camera.ProcessKeyboardMovement(dt, Direction::Down);
+    }
 };
 
 void Engine::Run()
@@ -233,11 +180,7 @@ void Engine::Run()
 
 void Engine::Shutdown()
 {
-    textureCat.reset();
-    textureBrick.reset();
-    ebo.reset();
-    vbo.reset();
-    vao.reset();
+    backpack.reset();
     shader.reset();
 
     ImGui_ImplOpenGL3_Shutdown();
