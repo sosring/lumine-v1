@@ -9,7 +9,7 @@
 ---
 
 **Movement Keys**
-
+```
 W -> Forward z-axis
 S -> Backward z-axis
 D -> Left x-axis
@@ -19,8 +19,11 @@ Space -> Up y-axis
 Q -> Toggle debug window / enable movement
 Escape -> Close application
 
-movement is disable by default to enable it toggle debug window using `Q`
+Movement is disable by default to enable it toggle debug window using `Q`
+```
 
 ---
 
-<img width="840" height="659" alt="Screenshot 2026-07-08 at 12 11 54 AM" src="https://github.com/user-attachments/assets/6057cf6d-aae7-49a6-84af-9e14368951ae" />
+<img width="2559" height="1413" alt="Screenshot 2026-07-18 at 1 41 30 AM" src="https://github.com/user-attachments/assets/233bb591-a7dc-45dc-a79a-35bcef44bb1e" />
+<img width="2560" height="1413" alt="Screenshot 2026-07-18 at 1 41 47 AM" src="https://github.com/user-attachments/assets/8e4ce810-a239-4ed8-bdfa-8f19d015131e" />
+
