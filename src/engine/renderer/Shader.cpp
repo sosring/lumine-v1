@@ -1,5 +1,9 @@
 #include "Shader.hpp"
 
+#include <fstream>
+#include <sstream>
+#include <iostream>
+
 Shader::Shader(const char *vertFile, const char *fragFile)
 {
     std::string vertCode = loadShaderFile(vertFile);
@@ -11,12 +15,12 @@ Shader::Shader(const char *vertFile, const char *fragFile)
     GLuint vshader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vshader, 1, &vertSource, nullptr);
     glCompileShader(vshader);
-    checkCompileErrors(vshader, "VERTEX");
+    checkCompileErrors(vshader, "VERTEX", vertFile);
 
     GLuint fshader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fshader, 1, &fragSource, nullptr);
     glCompileShader(fshader);
-    checkCompileErrors(fshader, "FRAGMENT");
+    checkCompileErrors(fshader, "FRAGMENT", fragFile);
 
     ID = glCreateProgram();
 
@@ -24,7 +28,7 @@ Shader::Shader(const char *vertFile, const char *fragFile)
     glAttachShader(ID, fshader);
     glLinkProgram(ID);
     glValidateProgram(ID);
-    checkCompileErrors(ID, "PROGRAM");
+    checkCompileErrors(ID, "PROGRAM", nullptr);
 
     glDeleteShader(vshader);
     glDeleteShader(fshader);
@@ -51,7 +55,7 @@ std::string Shader::loadShaderFile(const char *path)
     return content;
 }
 
-void Shader::checkCompileErrors(GLuint shader, const char *type)
+void Shader::checkCompileErrors(GLuint shader, const char *type, const char *filename)
 {
     GLint success;
     char infoLog[1024];
@@ -61,7 +65,7 @@ void Shader::checkCompileErrors(GLuint shader, const char *type)
         if (!success)
         {
             glGetShaderInfoLog(shader, 1024, nullptr, infoLog);
-            std::cerr << "SHADER_COMPILE_ERROR (" << type << "):\n" << infoLog << "\n";
+            std::cerr << "SHADER_COMPILE_ERROR (" << type << "):\n" << infoLog << filename << "\n";
         }
     }
     else
@@ -70,6 +74,7 @@ void Shader::checkCompileErrors(GLuint shader, const char *type)
         if (!success)
         {
             glGetProgramInfoLog(shader, 1024, nullptr, infoLog);
+
             std::cerr << "PROGRAM_LINK_ERROR:\n" << infoLog << "\n";
         }
     }

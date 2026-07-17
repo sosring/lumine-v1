@@ -13,7 +13,7 @@ class Model
 {
   public:
     Model(const char *path) { loadModel(path); }
-    void Draw(Shader &shader);
+    void Draw(Shader &shader) const;
 
   private:
     // Model data

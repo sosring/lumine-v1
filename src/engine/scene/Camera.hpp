@@ -25,25 +25,25 @@ class Camera
 
     glm::vec3 GetPosition() const { return Position; }
 
-    void DebugUI();
-
     // Call once per frame with SDL's relative mouse delta (e.g. from SDL_EVENT_MOUSE_MOTION's xrel/yrel)
     void ProcessMouseMovement(float xoffset, float yoffset);
 
     void ProcessKeyboardMovement(float dt, Direction dir);
 
+    glm::vec3 GetPosition() { return Position; }
+
   private:
     void updateVectors();
 
-    glm::vec3 Position{0.0f, 6.0f, 5.0f};
+    glm::vec3 Position{0.0f, 1.0f, 10.0f};
     glm::vec3 Front{0.0f, 0.0f, -1.0f};
     glm::vec3 Up{0.0f, 1.0f, 0.0f};
     glm::vec3 Right{1.0f, 0.0f, 0.0f};
     glm::vec3 WorldUp{0.0f, 1.0f, 0.0f};
 
     float Yaw{-90.0f}; // -90 so default Front points down -Z, matching old default
-    float Pitch{-45.0f};
+    float Pitch{0.0f};
 
-    const float Speed{3.0f};
+    const float Speed{2.0f};
     const float sensitivity{0.1f};
 };

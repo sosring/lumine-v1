@@ -12,24 +12,32 @@ find_package(OpenGL REQUIRED)
 find_package(assimp REQUIRED)
 
 # ---------------- Source Files ----------------
-file(GLOB ENGINE_CORE_SRC
-    CONFIGURE_DEPENDS
-    src/engine/core/*.cpp
+set(ENGINE_CORE_SRC
+    src/engine/core/Engine.cpp
 )
 
-file(GLOB ENGINE_SCENE_SRC
-    CONFIGURE_DEPENDS
-    src/engine/scene/*.cpp
+set(ENGINE_SCENE_SRC
+    src/engine/scene/Camera.cpp
+    src/engine/scene/Scene.cpp
 )
 
-file(GLOB ENGINE_RENDERER_SRC
-    CONFIGURE_DEPENDS
-    src/engine/renderer/*.cpp
+set( ENGINE_RENDERER_SRC
+    src/engine/renderer/Renderer.cpp
+    src/engine/renderer/Mesh.cpp
+    src/engine/renderer/Model.cpp
+    src/engine/renderer/Texture.cpp
+    src/engine/renderer/Shader.cpp
 )
 
-file(GLOB IMGUI_SRC
-    CONFIGURE_DEPENDS
-    vendor/imgui/*.cpp
+# ---------------- Imgui ----------------
+
+set(IMGUI_SRC
+     vendor/imgui/imgui.cpp
+     vendor/imgui/imgui_draw.cpp
+     vendor/imgui/imgui_impl_opengl3.cpp
+     vendor/imgui/imgui_impl_sdl3.cpp
+     vendor/imgui/imgui_tables.cpp
+     vendor/imgui/imgui_widgets.cpp
 )
 
 # ---------------- Executable ----------------
@@ -55,6 +63,10 @@ target_include_directories(${PROJECT_NAME}
         vendor/imgui
         vendor/stb
         src
+	src/engine
+	src/engine/core
+	src/engine/renderer
+	sr/engine/scene
 )
 
 target_link_libraries(${PROJECT_NAME}

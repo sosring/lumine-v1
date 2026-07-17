@@ -3,12 +3,9 @@
 #include <imgui.h>
 #include <imgui_impl_sdl3.h>
 #include <imgui_impl_opengl3.h>
-#include <memory>
 
-Engine::Engine(int width, int height) : width(width), height(height)
+Engine::Engine(int width, int height) : window("Lumine-v1-gl", width, height)
 {
-    InitWindow();
-    InitGL();
     InitScene();
     InitImGui();
 
@@ -20,52 +17,9 @@ Engine::~Engine()
     Shutdown();
 }
 
-void Engine::InitWindow()
-{
-    if (!SDL_Init(SDL_INIT_VIDEO))
-    {
-        SDL_Log("Failed to initialize SDL");
-        throw std::runtime_error("Failed to initialize SDL");
-    }
-
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-
-    window = SDL_CreateWindow("Lumine-v1-GL", width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-    if (!window)
-    {
-        SDL_Log("Failed to create window %s", SDL_GetError());
-        throw std::runtime_error("window creation failed");
-    }
-
-    if (state == AppState::GameMode)
-        SDL_SetWindowRelativeMouseMode(window, true);
-};
-
-void Engine::InitGL()
-{
-    glContext = SDL_GL_CreateContext(window);
-    if (!glContext)
-    {
-        SDL_Log("Failed to create gl context %s", SDL_GetError());
-        throw std::runtime_error("Failed to create gl context");
-    }
-
-    if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress))
-    {
-        SDL_Log("Failed to load proc address %s", SDL_GetError());
-        throw std::runtime_error("Failed to load proc address");
-    }
-
-    glViewport(0, 0, width, height);
-    glEnable(GL_DEPTH_TEST);
-};
-
 void Engine::InitScene()
 {
-    shader = std::make_unique<Shader>("res/shaders/object.vs", "res/shaders/object.fs");
-    backpack = std::make_unique<Model>("res/models/backpack/backpack.obj");
+    scene.Load();
 };
 
 void Engine::InitImGui()
@@ -82,27 +36,8 @@ void Engine::InitImGui()
     style.Alpha = 0.8f;
 
     // Initialize backends
-    ImGui_ImplSDL3_InitForOpenGL(window, glContext);
+    ImGui_ImplSDL3_InitForOpenGL(window.Handle(), window.GLContext());
     ImGui_ImplOpenGL3_Init("#version 410");
-};
-
-void Engine::DrawScene()
-{
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
-    glm::mat4 view = camera.GetViewMatrix();
-    glm::mat4 model = glm::mat4(1.0f);
-    if (spinModel)
-        model = glm::rotate(model, static_cast<float>(SDL_GetTicks() / 1000.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-    shader->Use();
-    shader->setMat4("model", model);
-    shader->setMat4("view", view);
-    shader->setMat4("projection", projection);
-
-    glPolygonMode(GL_FRONT_AND_BACK, drawGeometry ? GL_LINE : GL_FILL);
-
-    if (backpack)
-        backpack->Draw(*shader);
 };
 
 void Engine::DrawDebugUI()
@@ -113,13 +48,17 @@ void Engine::DrawDebugUI()
 
     ImGui::Begin("Debug");
 
-    if (ImGui::CollapsingHeader("Model", ImGuiTreeNodeFlags_DefaultOpen))
+    // Will use this for editing light color and intensity
+    if (ImGui::CollapsingHeader("Engine", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        ImGui::Checkbox("Draw Geometry", &drawGeometry);
-        ImGui::Checkbox("Spin Model", &spinModel);
+        bool wireframe = renderer.Wireframe();
+        ImGui::ColorPicker4("Light Color", glm::value_ptr(scene.LightColor()));
+        if (ImGui::Checkbox("Draw Geometry", &wireframe))
+            renderer.SetWireframe(wireframe);
+
+        ImGui::DragFloat3("Light Position", glm::value_ptr(scene.LightPosition()));
     }
 
-    camera.DebugUI();
     ImGui::End();
 
     ImGui::Render();
@@ -128,38 +67,32 @@ void Engine::DrawDebugUI()
 
 void Engine::Render()
 {
-    glClearColor(0.2f, 0.4f, 0.4f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    renderer.Render(scene, camera, window);
 
-    DrawScene();
     if (state == AppState::DebugMode)
         DrawDebugUI();
 
-    SDL_GL_SwapWindow(window);
+    window.SwapBuffers();
 };
 
 void Engine::Update(float dt)
 {
-    // Update camera and scene
-
     // Camera Keyboard Movement
-    if (state == AppState::GameMode)
-    {
-        const bool *keys = SDL_GetKeyboardState(nullptr);
+    if (input.IsKeyDown(SDL_SCANCODE_W))
+        camera.ProcessKeyboardMovement(dt, Direction::Forward);
+    if (input.IsKeyDown(SDL_SCANCODE_S))
+        camera.ProcessKeyboardMovement(dt, Direction::BackWard);
+    if (input.IsKeyDown(SDL_SCANCODE_A))
+        camera.ProcessKeyboardMovement(dt, Direction::Left);
+    if (input.IsKeyDown(SDL_SCANCODE_D))
+        camera.ProcessKeyboardMovement(dt, Direction::Right);
+    if (input.IsKeyDown(SDL_SCANCODE_SPACE))
+        camera.ProcessKeyboardMovement(dt, Direction::Up);
+    if (input.IsKeyDown(SDL_SCANCODE_LSHIFT))
+        camera.ProcessKeyboardMovement(dt, Direction::Down);
 
-        if (keys[SDL_SCANCODE_W])
-            camera.ProcessKeyboardMovement(dt, Direction::Forward);
-        if (keys[SDL_SCANCODE_S])
-            camera.ProcessKeyboardMovement(dt, Direction::BackWard);
-        if (keys[SDL_SCANCODE_A])
-            camera.ProcessKeyboardMovement(dt, Direction::Left);
-        if (keys[SDL_SCANCODE_D])
-            camera.ProcessKeyboardMovement(dt, Direction::Right);
-        if (keys[SDL_SCANCODE_SPACE])
-            camera.ProcessKeyboardMovement(dt, Direction::Up);
-        if (keys[SDL_SCANCODE_LSHIFT])
-            camera.ProcessKeyboardMovement(dt, Direction::Down);
-    }
+    if (state == AppState::GameMode)
+        camera.ProcessMouseMovement(input.MouseDeltaX(), input.MouseDeltaY());
 };
 
 void Engine::Run()
@@ -178,58 +111,40 @@ void Engine::Run()
     }
 }
 
-void Engine::Shutdown()
-{
-    backpack.reset();
-    shader.reset();
-
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplSDL3_Shutdown();
-    ImGui::DestroyContext();
-
-    if (glContext)
-    {
-        SDL_GL_DestroyContext(glContext);
-        glContext = nullptr;
-    }
-    if (window)
-    {
-        SDL_DestroyWindow(window);
-        window = nullptr;
-    }
-    SDL_Quit();
-};
-
 void Engine::PollEvents()
 {
+    input.BeginFrame();
+
     SDL_Event e;
     while (SDL_PollEvent(&e))
     {
         ImGui_ImplSDL3_ProcessEvent(&e);
+        input.ProcessEvent(e);
 
         switch (e.type)
         {
-            case SDL_EVENT_QUIT:
-                quit = true;
-                break;
             case SDL_EVENT_KEY_DOWN:
-                if (e.key.key == SDLK_ESCAPE)
-                    quit = true;
                 if (e.key.key == SDLK_Q)
                 {
                     state = state == AppState::DebugMode ? AppState::GameMode : AppState::DebugMode;
-                    SDL_SetWindowRelativeMouseMode(window, state == AppState::GameMode);
+                    window.SetRelativeMouseMode(state == AppState::GameMode);
                 }
                 break;
             case SDL_EVENT_WINDOW_RESIZED:
-                width = e.window.data1;
-                height = e.window.data2;
-                glViewport(0, 0, width, height);
+                window.Resize(e.window.data1, e.window.data2);
                 break;
-            case SDL_EVENT_MOUSE_MOTION:
-                if (state == AppState::GameMode)
-                    camera.ProcessMouseMovement(e.motion.xrel, e.motion.yrel);
+            default:
                 break;
         }
     }
+
+    if (input.QuitRequested())
+        quit = true;
+}
+
+void Engine::Shutdown()
+{
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplSDL3_Shutdown();
+    ImGui::DestroyContext();
 };

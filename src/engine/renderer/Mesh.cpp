@@ -9,7 +9,7 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std:
     setupMesh();
 };
 
-void Mesh::Draw(Shader &shader)
+void Mesh::Draw(Shader &shader) const
 {
     unsigned int diffuseNr = 0;
     unsigned int specularNr = 0;

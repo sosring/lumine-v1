@@ -4,14 +4,13 @@
 
 **Phong Lighting**
 - [x] Implement ambient lighting
-- [ ] Implement diffuse lighting
-- [ ] Implement specular lighting
+- [x] Implement diffuse lighting
+- [x] Implement specular lighting
 
 **Refactor Engine class**
-- [ ] Window handler 
-- [ ] Input handler 
-- [ ] Renderer  
-- [ ] UI handler 
+- [x] Window handler 
+- [x] Input handler 
+- [x] Renderer  
 
 ---
 
@@ -29,3 +28,6 @@
 - [ ] ImGui enable docking 
 - [ ] Make engine as static lib (separate engine and game code)
 - [ ] Implement hot code reload
+
+**Update model parser**
+- [ ] Add support for GLB model glTF model
