@@ -3,8 +3,9 @@
 
 #include <iterator>
 #include <memory>
+#include <iostream>
 
-void Model::Draw(Shader &shader)
+void Model::Draw(Shader &shader) const
 {
     for (unsigned int i = 0; i < meshes.size(); i++)
         meshes[i].Draw(shader);
@@ -124,10 +125,11 @@ std::vector<std::shared_ptr<Texture>> Model::loadMaterialTextures(aiMaterial *ma
 
         if (!skip)
         {
-            std::string filename = directory + "/" + str.C_Str();
+            std::shared_ptr<Texture> tex;
 
-            // Shared ptr
-            auto tex = std::make_shared<Texture>(filename.c_str(), GL_TEXTURE_2D, GL_TEXTURE0, GL_UNSIGNED_BYTE);
+            // Paths starting with '*' are embedded textures (GLB/GLTF binary format)
+            std::string filename = directory + "/" + str.C_Str();
+            tex = std::make_shared<Texture>(filename.c_str(), GL_TEXTURE_2D, GL_TEXTURE0, GL_UNSIGNED_BYTE);
             tex->type = typeName;
             tex->path = str;
 

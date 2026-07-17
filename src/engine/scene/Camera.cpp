@@ -1,16 +1,5 @@
 #include "Camera.hpp"
 
-void Camera::DebugUI()
-{
-    if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_DefaultOpen))
-    {
-        ImGui::DragFloat3("Position", &Position.x, 0.05f);
-        ImGui::DragFloat("Yaw", &Yaw, 0.5f);
-        ImGui::DragFloat("Pitch", &Pitch, 0.5f, -89.0f, 89.0f);
-        // ImGui::SliderFloat("FOV", &fov, 1.0f, 120.0f);
-    }
-}
-
 // Call once per frame with SDL's relative mouse delta (e.g. from SDL_EVENT_MOUSE_MOTION's xrel/yrel)
 void Camera::ProcessMouseMovement(float xoffset, float yoffset)
 {

@@ -6,11 +6,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "engine/scene/Camera.hpp"
-#include "engine/renderer/Shader.hpp"
-#include "engine/renderer/Model.hpp"
-
-#include <memory>
+#include "Window.hpp"
+#include "Input.hpp"
+#include "renderer/Renderer.hpp"
+#include "scene/Scene.hpp"
+#include "scene/Camera.hpp"
 
 enum class AppState
 {
@@ -21,7 +21,7 @@ enum class AppState
 class Engine
 {
   public:
-    Engine(const int width = 800, const int height = 600);
+    Engine(const int width = 1200, const int height = 800);
     ~Engine();
 
     // Delete copy and move semantics
@@ -35,8 +35,6 @@ class Engine
 
   private:
     // --- Lifecycle ---
-    void InitWindow();
-    void InitGL();
     void InitScene();
     void InitImGui();
     void Shutdown();
@@ -45,20 +43,16 @@ class Engine
     void PollEvents();
     void Update(float dt);
     void Render();
-    void DrawScene();
     void DrawDebugUI();
 
   private:
     // Window / context
-    SDL_Window *window = nullptr;
-    SDL_GLContext glContext = nullptr;
-    int width, height;
+    Window window;
+    Input input;
+    Renderer renderer;
+    Scene scene;
+
     bool quit = false;
-
-    // Test Variable
-    bool drawGeometry = false;
-    bool spinModel = false;
-
     AppState state = AppState::DebugMode;
 
     // Timing
@@ -66,8 +60,4 @@ class Engine
 
     // Scene / camera
     Camera camera;
-
-    // Resource
-    std::unique_ptr<Shader> shader;
-    std::unique_ptr<Model> backpack;
 };
