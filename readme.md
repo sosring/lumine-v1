@@ -1,5 +1,9 @@
 # Build Guide
 
+Basic openGL 3D renderer
+
+---
+
 > cmake -S . -B build
 > cmake --build Build
 
