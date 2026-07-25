@@ -21,6 +21,8 @@ class Shader
 
     void setInt(const char *uniform, GLuint unit) { glUniform1i(glGetUniformLocation(ID, uniform), unit); }
 
+    void setFloat(const char *uniform, GLfloat unit) { glUniform1f(glGetUniformLocation(ID, uniform), unit); }
+
     void setVec3(const char *name, const glm::vec3 &v) { glUniform3fv(glGetUniformLocation(ID, name), 1, glm::value_ptr(v)); }
 
     void setVec4(const char *name, const glm::vec4 &v) { glUniform4fv(glGetUniformLocation(ID, name), 1, glm::value_ptr(v)); }

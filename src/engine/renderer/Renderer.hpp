@@ -20,8 +20,11 @@ class Renderer
     void SetWireframe(bool enabled) { wireframe = enabled; }
     bool Wireframe() const { return wireframe; }
 
+    float &AmbientIntensity() { return ambientIntensity; }
+    const float &AmbientIntensity() const { return ambientIntensity; }
+
   private:
-    std::unique_ptr<Shader> objectShader;
-    std::unique_ptr<Shader> lightShader;
+    std::unique_ptr<Shader> modelShader;
     bool wireframe = false;
+    float ambientIntensity = 0.2f;
 };

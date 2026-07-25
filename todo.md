@@ -2,15 +2,9 @@
 
 # Priority 
 
-**Phong Lighting**
-- [x] Implement ambient lighting
-- [x] Implement diffuse lighting
-- [x] Implement specular lighting
-
-**Refactor Engine class**
-- [x] Window handler 
-- [x] Input handler 
-- [x] Renderer  
+- [x] Directional Light
+- [ ] Point Light
+- [ ] Spot Light
 
 ---
 

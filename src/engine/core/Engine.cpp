@@ -53,10 +53,12 @@ void Engine::DrawDebugUI()
     {
         bool wireframe = renderer.Wireframe();
         ImGui::ColorPicker4("Light Color", glm::value_ptr(scene.LightColor()));
-        if (ImGui::Checkbox("Draw Geometry", &wireframe))
+        if (ImGui::Checkbox("Draw Wireframe", &wireframe))
             renderer.SetWireframe(wireframe);
 
-        ImGui::DragFloat3("Light Position", glm::value_ptr(scene.LightPosition()));
+        // ImGui::DragFloat3("Light Position", glm::value_ptr(scene.LightPosition()));
+        ImGui::DragFloat3("Directional Light", glm::value_ptr(scene.DirectionalLight()));
+        ImGui::SliderFloat("Ambient Intensity", &renderer.AmbientIntensity(), 0.2f, 0.5f);
     }
 
     ImGui::End();
@@ -78,21 +80,23 @@ void Engine::Render()
 void Engine::Update(float dt)
 {
     // Camera Keyboard Movement
-    if (input.IsKeyDown(SDL_SCANCODE_W))
-        camera.ProcessKeyboardMovement(dt, Direction::Forward);
-    if (input.IsKeyDown(SDL_SCANCODE_S))
-        camera.ProcessKeyboardMovement(dt, Direction::BackWard);
-    if (input.IsKeyDown(SDL_SCANCODE_A))
-        camera.ProcessKeyboardMovement(dt, Direction::Left);
-    if (input.IsKeyDown(SDL_SCANCODE_D))
-        camera.ProcessKeyboardMovement(dt, Direction::Right);
-    if (input.IsKeyDown(SDL_SCANCODE_SPACE))
-        camera.ProcessKeyboardMovement(dt, Direction::Up);
-    if (input.IsKeyDown(SDL_SCANCODE_LSHIFT))
-        camera.ProcessKeyboardMovement(dt, Direction::Down);
-
     if (state == AppState::GameMode)
+    {
+        if (input.IsKeyDown(SDL_SCANCODE_W))
+            camera.ProcessKeyboardMovement(dt, Direction::Forward);
+        if (input.IsKeyDown(SDL_SCANCODE_S))
+            camera.ProcessKeyboardMovement(dt, Direction::BackWard);
+        if (input.IsKeyDown(SDL_SCANCODE_A))
+            camera.ProcessKeyboardMovement(dt, Direction::Left);
+        if (input.IsKeyDown(SDL_SCANCODE_D))
+            camera.ProcessKeyboardMovement(dt, Direction::Right);
+        if (input.IsKeyDown(SDL_SCANCODE_SPACE))
+            camera.ProcessKeyboardMovement(dt, Direction::Up);
+        if (input.IsKeyDown(SDL_SCANCODE_LSHIFT))
+            camera.ProcessKeyboardMovement(dt, Direction::Down);
+
         camera.ProcessMouseMovement(input.MouseDeltaX(), input.MouseDeltaY());
+    }
 };
 
 void Engine::Run()

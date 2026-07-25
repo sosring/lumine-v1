@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include <memory>
+// #include <memory>
 #include <glm/glm.hpp>
 #include "renderer/Model.hpp"
 
@@ -20,19 +20,16 @@ class Scene
     std::vector<SceneObject> &Objects() { return objects; }
     const std::vector<SceneObject> &Objects() const { return objects; }
 
-    Model &LightMarker() { return *lightMarker; }
-    const Model &LightMarker() const { return *lightMarker; }
-
     glm::vec3 &LightColor() { return lightColor; }
     const glm::vec3 &LightColor() const { return lightColor; }
 
-    glm::vec3 &LightPosition() { return lightPos; }
-    const glm::vec3 &LightPosition() const { return lightPos; }
+    glm::vec4 &DirectionalLight() { return directionalLight; }
+    const glm::vec4 &DirectionalLight() const { return directionalLight; }
 
   private:
     std::vector<SceneObject> objects;
     std::unique_ptr<Model> lightMarker;
 
     glm::vec3 lightColor{1.0f, 1.0f, 1.0f};
-    glm::vec3 lightPos{-2.0f, 3.0f, 3.0f};
+    glm::vec4 directionalLight{-0.2f, -1.0f, -0.3f, 0.0f};
 };

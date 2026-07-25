@@ -35,7 +35,7 @@ class Camera
   private:
     void updateVectors();
 
-    glm::vec3 Position{0.0f, 1.0f, 10.0f};
+    glm::vec3 Position{0.0f, 1.0f, 8.0f};
     glm::vec3 Front{0.0f, 0.0f, -1.0f};
     glm::vec3 Up{0.0f, 1.0f, 0.0f};
     glm::vec3 Right{1.0f, 0.0f, 0.0f};

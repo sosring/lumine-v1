@@ -1,9 +1,9 @@
 #include "Renderer.hpp"
+#include "scene/Scene.hpp"
 
 Renderer::Renderer()
 {
-    objectShader = std::make_unique<Shader>("res/shaders/object.vs", "res/shaders/object.fs");
-    lightShader = std::make_unique<Shader>("res/shaders/moon.vs", "res/shaders/moon.fs");
+    modelShader = std::make_unique<Shader>("res/shaders/model.vs", "res/shaders/model.fs");
 }
 
 void Renderer::Render(const Scene &scene, Camera &camera, const Window &window)
@@ -17,27 +17,17 @@ void Renderer::Render(const Scene &scene, Camera &camera, const Window &window)
     glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_LINE : GL_FILL);
 
     // Scene objects
-    objectShader->Use();
-    objectShader->setMat4("view", view);
-    objectShader->setMat4("projection", projection);
-    objectShader->setVec3("lightColor", scene.LightColor());
-    objectShader->setVec3("lightPos", scene.LightPosition());
+    modelShader->Use();
+    modelShader->setMat4("view", view);
+    modelShader->setMat4("projection", projection);
+    modelShader->setVec3("light.color", scene.LightColor());
+    modelShader->setFloat("ambientIntensity", ambientIntensity);
+    modelShader->setVec4("light.direction", scene.DirectionalLight());
+    modelShader->setInt("wireframe", wireframe);
 
     for (auto &object : scene.Objects())
     {
-        objectShader->setMat4("model", object.transform);
-        object.model.Draw(*objectShader);
+        modelShader->setMat4("model", object.transform);
+        object.model.Draw(*modelShader);
     }
-
-    // Light marker
-    glm::mat4 lightModel = glm::translate(glm::mat4(1.0f), scene.LightPosition());
-    lightModel = glm::scale(lightModel, glm::vec3(0.5f));
-
-    lightShader->Use();
-    lightShader->setMat4("model", lightModel);
-    lightShader->setMat4("view", view);
-    lightShader->setMat4("projection", projection);
-    lightShader->setVec3("lightColor", scene.LightColor());
-
-    scene.LightMarker().Draw(*lightShader);
 }
