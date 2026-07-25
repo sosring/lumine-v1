@@ -25,6 +25,7 @@ class Renderer
 
   private:
     std::unique_ptr<Shader> modelShader;
+    std::unique_ptr<Shader> lightShader;
     bool wireframe = false;
     float ambientIntensity = 0.2f;
 };

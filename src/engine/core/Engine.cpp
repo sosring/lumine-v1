@@ -52,12 +52,14 @@ void Engine::DrawDebugUI()
     if (ImGui::CollapsingHeader("Engine", ImGuiTreeNodeFlags_DefaultOpen))
     {
         bool wireframe = renderer.Wireframe();
-        ImGui::ColorPicker4("Light Color", glm::value_ptr(scene.LightColor()));
+        ImGui::ColorPicker3("Light Color", glm::value_ptr(scene.GetDirectionalLight().color));
+
         if (ImGui::Checkbox("Draw Wireframe", &wireframe))
             renderer.SetWireframe(wireframe);
 
         // ImGui::DragFloat3("Light Position", glm::value_ptr(scene.LightPosition()));
-        ImGui::DragFloat3("Directional Light", glm::value_ptr(scene.DirectionalLight()));
+        // ImGui::DragFloat3("Directional Light", glm::value_ptr(scene.GetDirectionalLight().direction));
+        ImGui::DragFloat3("Point Light", glm::value_ptr(scene.GetPointLight().position));
         ImGui::SliderFloat("Ambient Intensity", &renderer.AmbientIntensity(), 0.2f, 0.5f);
     }
 

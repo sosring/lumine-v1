@@ -1,7 +1,7 @@
 #pragma once
 
+#include <memory>
 #include <vector>
-// #include <memory>
 #include <glm/glm.hpp>
 #include "renderer/Model.hpp"
 
@@ -12,6 +12,20 @@ struct SceneObject
     glm::mat4 transform{1.0f};
 };
 
+struct DirectionalLight
+{
+    glm::vec3 direction{3.0f, -1.0f, -0.3f};
+    glm::vec3 color{1.0f, 1.0f, 1.0f};
+};
+
+struct PointLight
+{
+    glm::vec3 position{0.0f, 3.0f, -3.0f};
+    glm::vec3 color{1.0f, 1.0f, 1.0f};
+    float constant = 1.0f, linear = 0.09f, quadratic = 0.032f;
+    std::unique_ptr<Model> gizmo; // the sphere mesh drawn to visualize the light
+};
+
 class Scene
 {
   public:
@@ -20,16 +34,15 @@ class Scene
     std::vector<SceneObject> &Objects() { return objects; }
     const std::vector<SceneObject> &Objects() const { return objects; }
 
-    glm::vec3 &LightColor() { return lightColor; }
-    const glm::vec3 &LightColor() const { return lightColor; }
+    DirectionalLight &GetDirectionalLight() { return m_DirectionalLight; }
+    const DirectionalLight &GetDirectionalLight() const { return m_DirectionalLight; }
 
-    glm::vec4 &DirectionalLight() { return directionalLight; }
-    const glm::vec4 &DirectionalLight() const { return directionalLight; }
+    PointLight &GetPointLight() { return m_PointLight; }
+    const PointLight &GetPointLight() const { return m_PointLight; }
 
   private:
     std::vector<SceneObject> objects;
-    std::unique_ptr<Model> lightMarker;
 
-    glm::vec3 lightColor{1.0f, 1.0f, 1.0f};
-    glm::vec4 directionalLight{-0.2f, -1.0f, -0.3f, 0.0f};
+    DirectionalLight m_DirectionalLight;
+    PointLight m_PointLight;
 };

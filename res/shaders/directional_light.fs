@@ -32,7 +32,7 @@ void main() {
 
     // Diffuse Light
     vec3 norm = normalize(Normal);
-    vec3 lightDir = normalize(light.position - FragPos);
+    vec3 lightDir = normalize(-light.direction);
 
     float diff = max(dot(norm, lightDir), 0.0f);
     vec3 diffuse = diff * light.color;

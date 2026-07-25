@@ -3,7 +3,7 @@
 # Priority 
 
 - [x] Directional Light
-- [ ] Point Light
+- [x] Point Light
 - [ ] Spot Light
 
 ---
