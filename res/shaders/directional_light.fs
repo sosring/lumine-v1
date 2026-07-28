@@ -11,12 +11,7 @@ uniform sampler2D texture_specular0;
 
 struct Light {
     vec3 direction;
-    vec3 position;
     vec3 color;
-
-    float constant;
-    float linear;
-    float quadratic;
 };
 
 uniform float ambientIntensity;
@@ -28,7 +23,7 @@ void main() {
     vec4 albedo = texture(texture_diffuse0, TexCoord);
 
     // Ambient Light
-    vec3 ambient = light.color * ambientIntensity;
+    vec3 ambient = ambientIntensity * albedo.rgb;
 
     // Diffuse Light
     vec3 norm = normalize(Normal);

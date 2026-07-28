@@ -1,11 +1,11 @@
 #include "Renderer.hpp"
 #include "scene/Scene.hpp"
-#include <memory>
+#include "scene/Camera.hpp"
 
 Renderer::Renderer()
 {
-    modelShader = std::make_unique<Shader>("res/shaders/model.vs", "res/shaders/point_light.fs");
-    lightShader = std::make_unique<Shader>("res/shaders/moon.vs", "res/shaders/moon.fs");
+    modelShader = std::make_unique<Shader>("res/shaders/model.vs", "res/shaders/spot_light.fs");
+    // lightShader = std::make_unique<Shader>("res/shaders/moon.vs", "res/shaders/moon.fs");
 }
 
 void Renderer::Render(const Scene &scene, Camera &camera, const Window &window)
@@ -19,21 +19,30 @@ void Renderer::Render(const Scene &scene, Camera &camera, const Window &window)
     glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_LINE : GL_FILL);
 
     // Scene objects
+
     modelShader->Use();
     modelShader->setMat4("view", view);
     modelShader->setMat4("projection", projection);
     modelShader->setInt("wireframe", wireframe);
 
-    glm::vec3 lightPosView = glm::vec3(view * glm::vec4(scene.GetPointLight().position, 1.0f));
-    glm::vec3 lightDirView = glm::vec3(view * glm::vec4(scene.GetDirectionalLight().direction, 1.0f));
-    modelShader->setVec3("light.direction", lightDirView);
-    modelShader->setVec3("light.position", lightPosView);
-    modelShader->setFloat("ambientIntensity", ambientIntensity);
-    modelShader->setVec3("light.color", scene.GetDirectionalLight().color);
+    // glm::vec3 lightDirView = glm::vec3(view * glm::vec4(scene.GetDirectionalLight().direction, 1.0f));
+    // modelShader->setVec3("light.direction", lightDirView);
+    // glm::vec3 lightPosView = glm::vec3(view * glm::vec4(scene.GetPointLight().position, 1.0f));
+    // modelShader->setVec3("light.position", lightPosView);
+    // modelShader->setFloat("light.constant", scene.GetPointLight().constant);
+    // modelShader->setFloat("light.linear", scene.GetPointLight().linear);
+    // modelShader->setFloat("light.quadratic", scene.GetPointLight().quadratic);
 
-    modelShader->setFloat("light.constant", 1.0f);
-    modelShader->setFloat("light.linear", 0.09f);
-    modelShader->setFloat("light.quadratic", 0.032f);
+    auto &light = scene.GetSpotLight();
+    glm::vec3 lightPosView = glm::vec3(view * glm::vec4(camera.GetPosition(), 1.0f));
+    glm::vec3 lightDirView = glm::vec3(view * glm::vec4(camera.GetFront(), 0.0f));
+
+    modelShader->setVec3("light.color", light.color);
+    modelShader->setVec3("light.position", lightPosView);
+    modelShader->setVec3("light.direction", lightDirView);
+    modelShader->setFloat("light.cutOff", glm::cos(glm::radians(light.cutOff)));
+    modelShader->setFloat("light.outerCutOff", glm::cos(glm::radians(light.outerCutOff)));
+    modelShader->setFloat("ambientIntensity", ambientIntensity);
 
     for (auto &object : scene.Objects())
     {
@@ -42,13 +51,13 @@ void Renderer::Render(const Scene &scene, Camera &camera, const Window &window)
     }
 
     // Light Source
-    lightShader->Use();
-    lightShader->setMat4("view", view);
-    lightShader->setMat4("projection", projection);
-    lightShader->setVec3("lightColor", scene.GetPointLight().color);
-
-    glm::mat4 model = glm::translate(glm::mat4(1.0f), scene.GetPointLight().position);
-    lightShader->setMat4("model", model);
-
-    scene.GetPointLight().gizmo->Draw(*lightShader);
+    // lightShader->Use();
+    // lightShader->setMat4("view", view);
+    // lightShader->setMat4("projection", projection);
+    // lightShader->setVec3("lightColor", scene.GetPointLight().color);
+    //
+    // glm::mat4 model = glm::translate(glm::mat4(1.0f), scene.GetPointLight().position);
+    // lightShader->setMat4("model", model);
+    //
+    // scene.GetPointLight().gizmo->Draw(*lightShader);
 }

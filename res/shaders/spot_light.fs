@@ -14,9 +14,8 @@ struct Light {
     vec3 position;
     vec3 color;
 
-    float constant;
-    float linear;
-    float quadratic;
+    float cutOff;
+    float outerCutOff;
 };
 
 uniform float ambientIntensity;
@@ -28,7 +27,7 @@ void main() {
     vec4 albedo = texture(texture_diffuse0, TexCoord);
 
     // Ambient Light
-    vec3 ambient = light.color * ambientIntensity;
+    vec3 ambient = ambientIntensity * albedo.rgb;
 
     // Diffuse Light
     vec3 norm = normalize(Normal);
@@ -45,14 +44,13 @@ void main() {
     float spec = pow(max(dot(viewDir, reflectDir), 0.0f), 32.0f);
     vec3 specular = specularStrength * spec * light.color;
 
-    // Spot light
-    float distance = length(light.position - FragPos);
-    float attenuation = 1.0 / (light.constant + light.linear * distance +
-                light.quadratic * (distance * distance));
+    // Spot Light
+    float theta = dot(lightDir, normalize(-light.direction));
+    float epsilon = light.cutOff - light.outerCutOff;
+    float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0f, 1.0f);
 
-    ambient *= attenuation;
-    diffuse *= attenuation;
-    specular *= attenuation;
+    diffuse *= intensity;
+    specular *= intensity;
 
     vec3 result = (ambient + diffuse) * albedo.rgb + specular;
 

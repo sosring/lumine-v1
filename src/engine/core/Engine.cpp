@@ -28,7 +28,7 @@ void Engine::InitImGui()
     ImGui::CreateContext();
 
     ImGuiIO &io = ImGui::GetIO();
-    // (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
     ImGui::StyleColorsDark();
 
@@ -46,21 +46,78 @@ void Engine::DrawDebugUI()
     ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();
 
+    ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
+
     ImGui::Begin("Debug");
 
     // Will use this for editing light color and intensity
     if (ImGui::CollapsingHeader("Engine", ImGuiTreeNodeFlags_DefaultOpen))
     {
         bool wireframe = renderer.Wireframe();
-        ImGui::ColorPicker3("Light Color", glm::value_ptr(scene.GetDirectionalLight().color));
-
         if (ImGui::Checkbox("Draw Wireframe", &wireframe))
             renderer.SetWireframe(wireframe);
 
-        // ImGui::DragFloat3("Light Position", glm::value_ptr(scene.LightPosition()));
-        // ImGui::DragFloat3("Directional Light", glm::value_ptr(scene.GetDirectionalLight().direction));
-        ImGui::DragFloat3("Point Light", glm::value_ptr(scene.GetPointLight().position));
         ImGui::SliderFloat("Ambient Intensity", &renderer.AmbientIntensity(), 0.2f, 0.5f);
+    }
+
+    // Directional Light
+    // if (ImGui::CollapsingHeader("Direction Light", ImGuiTreeNodeFlags_DefaultOpen))
+    // {
+    //     auto &light = scene.GetDirectionalLight();
+    // ImGui::ColorPicker3("Light Color", glm::value_ptr(light.color));
+    //     ImGui::DragFloat3("Direction", glm::value_ptr(light.direction));
+    // }
+
+    // Point Light
+    // if (ImGui::CollapsingHeader("Point Light", ImGuiTreeNodeFlags_DefaultOpen))
+    // {
+    //     auto &light = scene.GetPointLight();
+    //     ImGui::ColorPicker3("Light Color", glm::value_ptr(light.color));
+    //     ImGui::DragFloat3("Position", glm::value_ptr(light.position));
+    //     ImGui::DragFloat("Constant", &light.constant, 0.01f, 0.1f, 2.0f);
+    //     ImGui::DragFloat("Linear", &light.linear, 0.001f, 0.0f, 0.5f);
+    //     ImGui::DragFloat("Quadratic", &light.quadratic, 0.001f, 0.0f, 0.3f);
+    //
+    //     // --- Attenuation curve preview ---
+    //     constexpr int kSampleCount = 100;
+    //     constexpr float kMaxDistance = 50.0f;
+    //     static float samples[kSampleCount];
+    //
+    //     for (int i = 0; i < kSampleCount; ++i)
+    //     {
+    //         float d = (float)i / (kSampleCount - 1) * kMaxDistance;
+    //         float atten = 1.0f / (light.constant + light.linear * d + light.quadratic * d * d);
+    //         samples[i] = atten;
+    //     }
+    //
+    //     ImGui::PlotLines(
+    //         "Attenuation",
+    //         samples,
+    //         kSampleCount,
+    //         0,             // values_offset
+    //         nullptr,       // overlay_text
+    //         0.0f,          // scale_min
+    //         1.0f,          // scale_max
+    //         ImVec2(0, 100) // graph size
+    //     );
+    //     ImGui::Text(
+    //         "Range (attn < 0.05): %.1f units",
+    //         [&]
+    //         {
+    //             for (int i = 0; i < kSampleCount; ++i)
+    //                 if (samples[i] < 0.05f)
+    //                     return (float)i / (kSampleCount - 1) * kMaxDistance;
+    //             return kMaxDistance;
+    //         }());
+    // }
+
+    // Spot Light
+    if (ImGui::CollapsingHeader("Spot Light", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        auto &light = scene.GetSpotLight();
+        ImGui::ColorPicker3("Light Color", glm::value_ptr(light.color));
+        ImGui::DragFloat("Inner Cutoff", &light.cutOff, 1.0f, 1.0f, 20.0f);
+        ImGui::DragFloat("Outer Cutoff", &light.outerCutOff, 1.0f, 5.0f, 20.0f);
     }
 
     ImGui::End();

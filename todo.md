@@ -6,6 +6,9 @@
 - [x] Point Light
 - [ ] Spot Light
 
+- [ ] Scene Management
+- [ ] Gizmos for models
+
 ---
 
 # SandBox
