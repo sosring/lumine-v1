@@ -36,6 +36,7 @@ struct SpotLight : Light
     // Position and direction will be set from camera
     // glm::vec3 direction{1.0f};
     // glm::vec3 position{1.0f};
+    bool enabled{false};
     glm::vec3 color{1.0f};
     float cutOff{5.0f};
     float outerCutOff{10.0f};
