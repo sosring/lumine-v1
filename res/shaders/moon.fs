@@ -11,7 +11,5 @@ in vec3 Normal;
 in vec2 TexCoord;
 
 void main() {
-    float intensity = 0.8f;
-
-    FragColor = texture(texture_diffuse0, TexCoord) * vec4(intensity * lightColor, 1.0f);
+    FragColor = texture(texture_diffuse0, TexCoord) * vec4(lightColor, 1.0f);
 }

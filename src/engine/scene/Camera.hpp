@@ -32,18 +32,20 @@ class Camera
 
     glm::vec3 GetPosition() { return Position; }
 
+    glm::vec3 GetFront() { return Front; }
+
   private:
     void updateVectors();
 
-    glm::vec3 Position{0.0f, 1.0f, 10.0f};
+    glm::vec3 Position{-7.6f, 11.0f, 8.0f};
     glm::vec3 Front{0.0f, 0.0f, -1.0f};
     glm::vec3 Up{0.0f, 1.0f, 0.0f};
     glm::vec3 Right{1.0f, 0.0f, 0.0f};
     glm::vec3 WorldUp{0.0f, 1.0f, 0.0f};
 
-    float Yaw{-90.0f}; // -90 so default Front points down -Z, matching old default
-    float Pitch{0.0f};
+    float Yaw{-45.0f}; // -90 so default Front points down -Z, matching old default
+    float Pitch{-27.0f};
 
-    const float Speed{2.0f};
+    const float Speed{3.0f};
     const float sensitivity{0.1f};
 };
