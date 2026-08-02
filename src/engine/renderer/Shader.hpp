@@ -19,9 +19,11 @@ class Shader
 
     void Use() { glUseProgram(ID); }
 
-    void setInt(const char *uniform, GLuint unit) { glUniform1i(glGetUniformLocation(ID, uniform), unit); }
+    void setInt(const char *uniform, GLuint v) { glUniform1i(glGetUniformLocation(ID, uniform), v); }
 
-    void setFloat(const char *uniform, GLfloat unit) { glUniform1f(glGetUniformLocation(ID, uniform), unit); }
+    void setFloat(const char *uniform, GLfloat v) { glUniform1f(glGetUniformLocation(ID, uniform), v); }
+
+    void setBool(const char *uniform, bool v) { glUniform1i(glGetUniformLocation(ID, uniform), (int)v); }
 
     void setVec3(const char *name, const glm::vec3 &v) { glUniform3fv(glGetUniformLocation(ID, name), 1, glm::value_ptr(v)); }
 
