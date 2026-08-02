@@ -32,6 +32,7 @@ void Renderer::Render(const Scene &scene, Camera &camera, const Window &window)
     {
         glm::vec3 lightDirView = glm::vec3(view * glm::vec4(dirLight.direction, 0.0f));
 
+        modelShader->setBool("dirLight.enabled", dirLight.enabled);
         modelShader->setVec3("dirLight.direction", lightDirView);
         modelShader->setVec3("dirLight.color", dirLight.color);
         modelShader->setFloat("ambientIntensity", ambientIntensity);
@@ -41,6 +42,7 @@ void Renderer::Render(const Scene &scene, Camera &camera, const Window &window)
     {
         glm::vec3 lightPosView = glm::vec3(view * glm::vec4(pointLight.position, 1.0f));
 
+        modelShader->setBool("pointLights[0].enabled", pointLight.enabled);
         modelShader->setVec3("pointLights[0].position", lightPosView);
         modelShader->setVec3("pointLights[0].color", pointLight.color);
         modelShader->setFloat("pointLights[0].constant", pointLight.constant);
@@ -53,6 +55,7 @@ void Renderer::Render(const Scene &scene, Camera &camera, const Window &window)
         glm::vec3 lightPosView = glm::vec3(view * glm::vec4(camera.GetPosition(), 1.0f));
         glm::vec3 lightDirView = glm::vec3(view * glm::vec4(camera.GetFront(), 0.0f));
 
+        modelShader->setBool("spotLight.enabled", spotLight.enabled);
         modelShader->setVec3("spotLight.position", lightPosView);
         modelShader->setVec3("spotLight.direction", lightDirView);
         modelShader->setVec3("spotLight.color", spotLight.color);
@@ -75,5 +78,6 @@ void Renderer::Render(const Scene &scene, Camera &camera, const Window &window)
     glm::mat4 model = glm::translate(glm::mat4(1.0f), scene.GetPointLight().position);
     lightShader->setMat4("model", model);
 
-    scene.GetPointLight().gizmo->Draw(*lightShader);
+    if (pointLight.enabled)
+        scene.GetPointLight().gizmo->Draw(*lightShader);
 }
