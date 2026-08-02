@@ -21,7 +21,7 @@
 
 # Needed feature
 
-- [ ] ImGui enable docking 
+- [x] ImGui enable docking 
 - [ ] Make engine as static lib (separate engine and game code)
 - [ ] Implement hot code reload
 

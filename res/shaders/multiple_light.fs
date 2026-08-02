@@ -10,11 +10,13 @@ uniform sampler2D texture_diffuse0;
 uniform sampler2D texture_specular0;
 
 struct DirLight {
+    bool enabled;
     vec3 direction;
     vec3 color;
 };
 
 struct PointLight {
+    bool enabled;
     vec3 position;
     vec3 color;
 
@@ -24,6 +26,7 @@ struct PointLight {
 };
 
 struct SpotLight {
+    bool enabled;
     vec3 direction;
     vec3 position;
     vec3 color;
@@ -115,14 +118,19 @@ void main() {
     vec3 viewDir = normalize(-FragPos);
 
     // Directional light
-    vec3 result = CalcDirLight(dirLight, norm, viewDir, diffTex, specTex);
+    vec3 result = vec3(0.0f);
+
+    if (dirLight.enabled)
+        result += CalcDirLight(dirLight, norm, viewDir, diffTex, specTex);
 
     // Point light
     for (int i = 0; i < NR_POINT_LIGHTS; i++)
-        result += CalcPointLight(pointLights[i], norm, FragPos, viewDir, diffTex, specTex);
+        if (pointLights[i].enabled)
+            result += CalcPointLight(pointLights[i], norm, FragPos, viewDir, diffTex, specTex);
 
     // Spot Light
-    result += CalcSpotLight(spotLight, norm, FragPos, viewDir, diffTex, specTex);
+    if (spotLight.enabled)
+        result += CalcSpotLight(spotLight, norm, FragPos, viewDir, diffTex, specTex);
 
     if (wireframe) {
         FragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);

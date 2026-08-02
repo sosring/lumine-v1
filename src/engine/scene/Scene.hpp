@@ -13,8 +13,8 @@ struct SceneObject
 
 struct Light
 {
+    bool enabled{true};
     glm::vec3 color{1.0f};
-    bool active;
 };
 
 struct DirectionalLight : Light

@@ -50,28 +50,39 @@ void Engine::DrawDebugUI()
 
     ImGui::Begin("Debug");
 
-    // Will use this for editing light color and intensity
     if (ImGui::CollapsingHeader("Engine", ImGuiTreeNodeFlags_DefaultOpen))
     {
+        ImGui::PushID("Engine");
+
         bool wireframe = renderer.Wireframe();
         if (ImGui::Checkbox("Draw Wireframe", &wireframe))
             renderer.SetWireframe(wireframe);
 
         ImGui::SliderFloat("Ambient Intensity", &renderer.AmbientIntensity(), 0.2f, 0.5f);
+
+        ImGui::PopID();
     }
 
     // Directional Light
-    if (ImGui::CollapsingHeader("Direction Light", ImGuiTreeNodeFlags_DefaultOpen))
+    if (ImGui::CollapsingHeader("Direction Light", ImGuiTreeNodeFlags_None))
     {
+        ImGui::PushID("DirLight");
+
         auto &light = scene.GetDirectionalLight();
+        ImGui::Checkbox("Enabled", &light.enabled);
         ImGui::ColorPicker3("Light Color", glm::value_ptr(light.color));
         ImGui::DragFloat3("Direction", glm::value_ptr(light.direction));
+
+        ImGui::PopID();
     }
 
     // Point Light
     if (ImGui::CollapsingHeader("Point Light", ImGuiTreeNodeFlags_None))
     {
+        ImGui::PushID("PointLight");
+
         auto &light = scene.GetPointLight();
+        ImGui::Checkbox("Enabled", &light.enabled);
         ImGui::ColorPicker3("Light Color", glm::value_ptr(light.color));
         ImGui::DragFloat3("Position", glm::value_ptr(light.position));
         ImGui::DragFloat("Constant", &light.constant, 0.01f, 0.1f, 2.0f);
@@ -90,16 +101,7 @@ void Engine::DrawDebugUI()
             samples[i] = atten;
         }
 
-        ImGui::PlotLines(
-            "Attenuation",
-            samples,
-            kSampleCount,
-            0,             // values_offset
-            nullptr,       // overlay_text
-            0.0f,          // scale_min
-            1.0f,          // scale_max
-            ImVec2(0, 100) // graph size
-        );
+        ImGui::PlotLines("Attenuation", samples, kSampleCount, 0, nullptr, 0.0f, 1.0f, ImVec2(0, 100));
         ImGui::Text(
             "Range (attn < 0.05): %.1f units",
             [&]
@@ -109,15 +111,22 @@ void Engine::DrawDebugUI()
                         return (float)i / (kSampleCount - 1) * kMaxDistance;
                 return kMaxDistance;
             }());
+
+        ImGui::PopID();
     }
 
     // Spot Light
     if (ImGui::CollapsingHeader("Spot Light", ImGuiTreeNodeFlags_None))
     {
+        ImGui::PushID("SpotLight");
+
         auto &light = scene.GetSpotLight();
+        ImGui::Checkbox("Enabled", &light.enabled);
         ImGui::ColorPicker3("Light Color", glm::value_ptr(light.color));
         ImGui::DragFloat("Inner Cutoff", &light.cutOff, 1.0f, 1.0f, 20.0f);
         ImGui::DragFloat("Outer Cutoff", &light.outerCutOff, 1.0f, 5.0f, 20.0f);
+
+        ImGui::PopID();
     }
 
     ImGui::End();
