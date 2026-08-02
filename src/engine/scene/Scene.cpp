@@ -5,7 +5,7 @@
 const char *earthModel = "res/models/earth/earth.obj";
 const char *backpackModel = "res/models/backpack/backpack.obj";
 const char *moonModel = "res/models/moon/moon.obj";
-const int count = 10;
+const int count = 2;
 
 void Scene::Load()
 {
@@ -17,9 +17,9 @@ void Scene::Load()
     {
         for (int j = 0; j < count; j++)
         {
-            SceneObject obj{Model(earthModel)};
+            SceneObject obj{Model(backpackModel)};
             obj.transform = glm::translate(obj.transform, glm::vec3(i * 3.0f, 0.0f, j * -3.0f));
-            obj.transform = glm::rotate(obj.transform, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+            // obj.transform = glm::rotate(obj.transform, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
             objects.push_back(std::move(obj));
         }
     }

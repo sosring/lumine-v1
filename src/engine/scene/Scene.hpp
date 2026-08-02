@@ -20,7 +20,7 @@ struct Light
 struct DirectionalLight : Light
 {
     glm::vec3 direction{3.0f, 3.0f, -3.0f};
-    glm::vec3 color{0.2f, 0.2f, 0.1f};
+    glm::vec3 color{0.2f, 0.2f, 0.7f};
 };
 
 struct PointLight : Light
