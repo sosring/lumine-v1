@@ -1,5 +1,5 @@
 #include "Model.hpp"
-#include "engine/renderer/Texture.hpp"
+#include "Texture.hpp"
 
 #include <iterator>
 #include <memory>

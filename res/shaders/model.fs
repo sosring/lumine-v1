@@ -28,7 +28,7 @@ void main() {
     vec4 albedo = texture(texture_diffuse0, TexCoord);
 
     // Ambient Light
-    vec3 ambient = light.color * ambientIntensity;
+    vec3 ambient = ambientIntensity * albedo.rgb;
 
     // Diffuse Light
     vec3 norm = normalize(Normal);

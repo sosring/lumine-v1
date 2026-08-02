@@ -3,13 +3,14 @@
 #include <memory>
 
 const char *earthModel = "res/models/earth/earth.obj";
+const char *backpackModel = "res/models/backpack/backpack.obj";
 const char *moonModel = "res/models/moon/moon.obj";
 const int count = 10;
 
 void Scene::Load()
 {
-    // objects.push_back(SceneObject{Model(earthModel)});
-    m_PointLight.gizmo = std::make_unique<Model>(moonModel);
+    // objects.push_back(SceneObject{Model(backpackModel)});
+    m_pointLight.gizmo = std::make_unique<Model>(moonModel);
 
     // Multiple obj render test
     for (int i = 0; i < count; i++)

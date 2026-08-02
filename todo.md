@@ -4,10 +4,9 @@
 
 - [x] Directional Light
 - [x] Point Light
-- [ ] Spot Light
-
+- [x] Spot Light
+- [x] Multiple Lights
 - [ ] Scene Management
-- [ ] Gizmos for models
 
 ---
 

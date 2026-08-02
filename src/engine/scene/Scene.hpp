@@ -11,26 +11,32 @@ struct SceneObject
     glm::mat4 transform{1.0f};
 };
 
-struct DirectionalLight
+struct Light
 {
-    glm::vec3 direction{3.0f, -1.0f, -0.3f};
-    glm::vec3 color{1.0f, 1.0f, 1.0f};
+    glm::vec3 color{1.0f};
+    bool active;
 };
 
-struct PointLight
+struct DirectionalLight : Light
+{
+    glm::vec3 direction{3.0f, 3.0f, -3.0f};
+    glm::vec3 color{0.2f, 0.2f, 0.1f};
+};
+
+struct PointLight : Light
 {
     glm::vec3 position{3.0f, 3.0f, -3.0f};
-    glm::vec3 color{1.0f, 1.0f, 1.0f};
+    glm::vec3 color{1.0f, 0.5f, 0.4f};
     float constant = 1.0f, linear = 0.07f, quadratic = 0.017f;
     std::unique_ptr<Model> gizmo; // the sphere mesh drawn to visualize the light
 };
 
-struct SpotLight
+struct SpotLight : Light
 {
     // Position and direction will be set from camera
     // glm::vec3 direction{1.0f};
     // glm::vec3 position{1.0f};
-    glm::vec3 color{1.0f, 1.0f, 1.0f};
+    glm::vec3 color{1.0f};
     float cutOff{5.0f};
     float outerCutOff{10.0f};
 };
@@ -46,16 +52,16 @@ class Scene
     DirectionalLight &GetDirectionalLight() { return m_DirectionalLight; }
     const DirectionalLight &GetDirectionalLight() const { return m_DirectionalLight; }
 
-    PointLight &GetPointLight() { return m_PointLight; }
-    const PointLight &GetPointLight() const { return m_PointLight; }
+    PointLight &GetPointLight() { return m_pointLight; }
+    const PointLight &GetPointLight() const { return m_pointLight; }
 
-    SpotLight &GetSpotLight() { return m_SpotLight; }
-    const SpotLight &GetSpotLight() const { return m_SpotLight; }
+    SpotLight &GetSpotLight() { return m_spotLight; }
+    const SpotLight &GetSpotLight() const { return m_spotLight; }
 
   private:
     std::vector<SceneObject> objects;
 
     DirectionalLight m_DirectionalLight;
-    PointLight m_PointLight;
-    SpotLight m_SpotLight;
+    PointLight m_pointLight;
+    SpotLight m_spotLight;
 };

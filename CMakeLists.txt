@@ -64,9 +64,6 @@ target_include_directories(${PROJECT_NAME}
         vendor/stb
         src
 	src/engine
-	src/engine/core
-	src/engine/renderer
-	sr/engine/scene
 )
 
 target_link_libraries(${PROJECT_NAME}
