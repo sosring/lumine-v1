@@ -13,7 +13,7 @@ void Renderer::Render(const Scene &scene, Camera &camera, const Window &window)
     glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), window.AspectRatio(), 0.1f, 100.0f);
+    glm::mat4 projection = camera.GetProjectionMatrix(window);
     glm::mat4 view = camera.GetViewMatrix();
 
     glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_LINE : GL_FILL);

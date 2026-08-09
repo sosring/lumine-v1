@@ -5,6 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui.h>
+#include "core/Window.hpp"
 
 enum class Direction
 {
@@ -23,12 +24,16 @@ class Camera
 
     glm::mat4 GetViewMatrix() { return glm::lookAt(Position, Position + Front, Up); }
 
+    glm::mat4 GetProjectionMatrix(const Window &window) { return glm::perspective(glm::radians(Fov), window.AspectRatio(), Near, Far); }
+
     glm::vec3 GetPosition() const { return Position; }
 
     // Call once per frame with SDL's relative mouse delta (e.g. from SDL_EVENT_MOUSE_MOTION's xrel/yrel)
     void ProcessMouseMovement(float xoffset, float yoffset);
 
     void ProcessKeyboardMovement(float dt, Direction dir);
+
+    void ProcessZoom(float yOffset);
 
     glm::vec3 GetPosition() { return Position; }
 
@@ -42,6 +47,10 @@ class Camera
     glm::vec3 Up{0.0f, 1.0f, 0.0f};
     glm::vec3 Right{1.0f, 0.0f, 0.0f};
     glm::vec3 WorldUp{0.0f, 1.0f, 0.0f};
+
+    // Projection
+    float Zoom{1.0f}, Fov{45.0f};
+    float Far = 100.0f, Near = 0.1f;
 
     float Yaw{-45.0f}; // -90 so default Front points down -Z, matching old default
     float Pitch{-27.0f};

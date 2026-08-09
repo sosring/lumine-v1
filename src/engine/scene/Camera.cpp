@@ -52,6 +52,17 @@ void Camera::ProcessKeyboardMovement(float dt, Direction dir)
     }
 }
 
+void Camera::ProcessZoom(float yOffset)
+{
+    Fov -= yOffset;
+
+    if (Fov < 25.0f)
+        Fov = 25.0f;
+
+    if (Fov > 90.0f)
+        Fov = 90.0f;
+};
+
 void Camera::updateVectors()
 {
     glm::vec3 newFront;

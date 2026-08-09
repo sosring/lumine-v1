@@ -1,21 +1,15 @@
-# July List 
-
 # Priority 
 
 - [x] Directional Light
 - [x] Point Light
 - [x] Spot Light
 - [x] Multiple Lights
-- [ ] Scene Management
-
----
-
-# SandBox
-
 - [ ] Draw infinite grid  
-- [ ] Draw terrain using height maps
-- [ ] Draw grass 
-- [ ] Draw water pond
+- [ ] Scene Management
+- [ ] Terrain
+- [ ] Grass
+- [ ] Water
+- [ ] Cloud
 
 ---
 

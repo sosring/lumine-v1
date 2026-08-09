@@ -205,7 +205,8 @@ void Engine::PollEvents()
             case SDL_EVENT_WINDOW_RESIZED:
                 window.Resize(e.window.data1, e.window.data2);
                 break;
-            default:
+            case SDL_EVENT_MOUSE_WHEEL:
+                camera.ProcessZoom(e.wheel.y);
                 break;
         }
     }
