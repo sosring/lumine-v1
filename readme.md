@@ -22,6 +22,7 @@ Shift -> Down y-axis
 Space -> Up y-axis
 Q -> Toggle debug window / enable movement
 Escape -> Close application
+Scroll Wheel -> Zoom
 
 Movement is disable by default to enable it toggle debug window using `Q`
 ```

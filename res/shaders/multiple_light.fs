@@ -44,6 +44,7 @@ uniform PointLight pointLights[NR_POINT_LIGHTS];
 uniform SpotLight spotLight;
 
 uniform bool wireframe;
+uniform bool depthTest;
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec4 diffTex, vec4 specTex) {
     vec3 lightDir = normalize(-light.direction);
@@ -110,6 +111,14 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec
     return (ambient + diffuse + specular) * light.color;
 }
 
+float near = 0.1;
+float far = 100.0;
+
+float LinearizeDepth(float depth) {
+    float z = depth * 2.0 - 1.0; // back to NDC
+    return (2.0 * near * far) / (far + near - z * (far - near));
+}
+
 void main() {
     vec4 diffTex = texture(texture_diffuse0, TexCoord);
     vec4 specTex = texture(texture_specular0, TexCoord);
@@ -134,6 +143,10 @@ void main() {
 
     if (wireframe) {
         FragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    }
+    else if (depthTest) {
+        float depth = LinearizeDepth(gl_FragCoord.z) / far; // far for demo
+        FragColor = vec4(vec3(depth), 1.0f);
     } else {
         FragColor = clamp(vec4(result, diffTex.a), 0.0f, 1.0f);
     }

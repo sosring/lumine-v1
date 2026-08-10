@@ -8,7 +8,7 @@ Texture::Texture(const char *filepath, GLenum texType, GLenum slot, GLenum pixel
 
     glTexParameteri(texType, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(texType, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(texType, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(texType, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(texType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     stbi_set_flip_vertically_on_load(true);

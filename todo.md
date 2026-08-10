@@ -1,11 +1,6 @@
-# Priority 
-
-- [x] Directional Light
-- [x] Point Light
-- [x] Spot Light
-- [x] Multiple Lights
-- [ ] Draw infinite grid  
+- [ ] Error reporting
 - [ ] Scene Management
+- [ ] Draw infinite grid  
 - [ ] Terrain
 - [ ] Grass
 - [ ] Water

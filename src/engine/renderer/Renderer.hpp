@@ -17,15 +17,19 @@ class Renderer
 
     void Render(const Scene &scene, Camera &camera, const Window &window);
 
-    void SetWireframe(bool enabled) { wireframe = enabled; }
-    bool Wireframe() const { return wireframe; }
+    void SetWireframe(bool enabled) { m_wireframe = enabled; }
+    bool Wireframe() const { return m_wireframe; }
 
-    float &AmbientIntensity() { return ambientIntensity; }
-    const float &AmbientIntensity() const { return ambientIntensity; }
+    bool DepthTest() const { return m_depthTest; }
+    void SetDepthTest(bool enabled) { m_depthTest = enabled; }
+
+    float &AmbientIntensity() { return m_ambientIntensity; }
+    const float &AmbientIntensity() const { return m_ambientIntensity; }
 
   private:
-    std::unique_ptr<Shader> modelShader;
-    std::unique_ptr<Shader> lightShader;
-    bool wireframe = false;
-    float ambientIntensity = 0.2f;
+    std::unique_ptr<Shader> m_modelShader;
+    std::unique_ptr<Shader> m_lightShader;
+    bool m_wireframe = false;
+    bool m_depthTest = false;
+    float m_ambientIntensity = 0.2f;
 };

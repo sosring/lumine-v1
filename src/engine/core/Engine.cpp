@@ -58,6 +58,10 @@ void Engine::DrawDebugUI()
         if (ImGui::Checkbox("Draw Wireframe", &wireframe))
             renderer.SetWireframe(wireframe);
 
+        bool depthTest = renderer.DepthTest();
+        if (ImGui::Checkbox("Draw Depth", &depthTest))
+            renderer.SetDepthTest(depthTest);
+
         ImGui::SliderFloat("Ambient Intensity", &renderer.AmbientIntensity(), 0.2f, 0.5f);
 
         ImGui::PopID();
