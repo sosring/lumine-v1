@@ -57,7 +57,4 @@ class Engine
 
     // Timing
     Uint64 lastTicks = 0;
-
-    // Scene / camera
-    Camera camera;
 };

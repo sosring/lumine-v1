@@ -14,6 +14,7 @@ class Model
   public:
     Model(const char *path) { loadModel(path); }
     void Draw(Shader &shader) const;
+    void DrawWithOutline(Shader &mainShader, Shader &outlineShader, const glm::mat4 &modelMatrix, float outlineScale = 1.02f) const;
 
   private:
     // Model data

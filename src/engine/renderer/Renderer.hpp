@@ -7,7 +7,6 @@
 
 #include "Shader.hpp"
 #include "scene/Scene.hpp"
-#include "scene/Camera.hpp"
 #include "core/Window.hpp"
 
 class Renderer
@@ -15,7 +14,7 @@ class Renderer
   public:
     Renderer();
 
-    void Render(const Scene &scene, Camera &camera, const Window &window);
+    void Render(const Scene &scene, const Window &window);
 
     void SetWireframe(bool enabled) { m_wireframe = enabled; }
     bool Wireframe() const { return m_wireframe; }
@@ -29,6 +28,7 @@ class Renderer
   private:
     std::unique_ptr<Shader> m_modelShader;
     std::unique_ptr<Shader> m_lightShader;
+    std::unique_ptr<Shader> m_outlineShader;
     bool m_wireframe = false;
     bool m_depthTest = false;
     float m_ambientIntensity = 0.2f;
