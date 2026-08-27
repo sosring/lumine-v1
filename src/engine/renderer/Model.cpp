@@ -11,6 +11,37 @@ void Model::Draw(Shader &shader) const
         meshes[i].Draw(shader);
 }
 
+void Model::DrawWithOutline(Shader &mainShader, Shader &outlineShader, const glm::mat4 &modelMatrix, float outlineScale) const
+{
+    // Main pass: draw normally, writing 1 into the stencil buffer everywhere
+    // this object is rasterized.
+    glStencilFunc(GL_ALWAYS, 1, 0xFF);
+    glStencilMask(0xFF);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+    mainShader.Use();
+    mainShader.setMat4("model", modelMatrix);
+    Draw(mainShader);
+
+    // Outline pass: draw a scaled-up copy, but only keep fragments where the
+    // stencil buffer does NOT already equal 1 (i.e. outside the object's
+    // silhouette). Depth testing is disabled so the outline draws over
+    // whatever is behind it.
+    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+    glStencilMask(0x00);
+    glDisable(GL_DEPTH_TEST);
+
+    glm::mat4 outlineModel = glm::scale(modelMatrix, glm::vec3(outlineScale));
+    outlineShader.Use();
+    outlineShader.setMat4("model", outlineModel);
+    Draw(outlineShader);
+
+    // Restore state so the next object (or the next frame) starts clean.
+    glStencilMask(0xFF);
+    glStencilFunc(GL_ALWAYS, 1, 0xFF);
+    glEnable(GL_DEPTH_TEST);
+};
+
 void Model::loadModel(std::string path)
 {
     Assimp::Importer import;

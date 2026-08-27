@@ -3,11 +3,13 @@
 #include <imgui.h>
 #include <imgui_impl_sdl3.h>
 #include <imgui_impl_opengl3.h>
+#include <memory>
 
 Engine::Engine(int width, int height) : window("Lumine-v1-gl", width, height)
 {
     InitScene();
     InitImGui();
+    window.SetRelativeMouseMode(state == AppState::GameMode);
 
     lastTicks = SDL_GetTicks();
 };
@@ -141,7 +143,7 @@ void Engine::DrawDebugUI()
 
 void Engine::Render()
 {
-    renderer.Render(scene, camera, window);
+    renderer.Render(scene, window);
 
     if (state == AppState::DebugMode)
         DrawDebugUI();
@@ -151,23 +153,25 @@ void Engine::Render()
 
 void Engine::Update(float dt)
 {
+    std::shared_ptr<Camera> camera = scene.GetSceneCamera();
+
     // Camera Keyboard Movement
     if (state == AppState::GameMode)
     {
         if (input.IsKeyDown(SDL_SCANCODE_W))
-            camera.ProcessKeyboardMovement(dt, Direction::Forward);
+            camera->ProcessKeyboardMovement(dt, Direction::Forward);
         if (input.IsKeyDown(SDL_SCANCODE_S))
-            camera.ProcessKeyboardMovement(dt, Direction::BackWard);
+            camera->ProcessKeyboardMovement(dt, Direction::BackWard);
         if (input.IsKeyDown(SDL_SCANCODE_A))
-            camera.ProcessKeyboardMovement(dt, Direction::Left);
+            camera->ProcessKeyboardMovement(dt, Direction::Left);
         if (input.IsKeyDown(SDL_SCANCODE_D))
-            camera.ProcessKeyboardMovement(dt, Direction::Right);
+            camera->ProcessKeyboardMovement(dt, Direction::Right);
         if (input.IsKeyDown(SDL_SCANCODE_SPACE))
-            camera.ProcessKeyboardMovement(dt, Direction::Up);
+            camera->ProcessKeyboardMovement(dt, Direction::Up);
         if (input.IsKeyDown(SDL_SCANCODE_LSHIFT))
-            camera.ProcessKeyboardMovement(dt, Direction::Down);
+            camera->ProcessKeyboardMovement(dt, Direction::Down);
 
-        camera.ProcessMouseMovement(input.MouseDeltaX(), input.MouseDeltaY());
+        camera->ProcessMouseMovement(input.MouseDeltaX(), input.MouseDeltaY());
     }
 };
 
@@ -210,7 +214,8 @@ void Engine::PollEvents()
                 window.Resize(e.window.data1, e.window.data2);
                 break;
             case SDL_EVENT_MOUSE_WHEEL:
-                camera.ProcessZoom(e.wheel.y);
+                if (state == AppState::GameMode)
+                    scene.GetSceneCamera()->ProcessZoom(e.wheel.y);
                 break;
         }
     }

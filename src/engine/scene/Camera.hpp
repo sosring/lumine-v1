@@ -17,6 +17,12 @@ enum class Direction
     Down
 };
 
+enum class CameraType
+{
+    FpsCamera,
+    ModelCamera
+};
+
 class Camera
 {
   public:

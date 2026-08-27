@@ -1,20 +1,27 @@
 #include "Renderer.hpp"
 #include "scene/Scene.hpp"
-#include "scene/Camera.hpp"
 
 Renderer::Renderer()
 {
     m_modelShader = std::make_unique<Shader>("res/shaders/model.vs", "res/shaders/multiple_light.fs");
     m_lightShader = std::make_unique<Shader>("res/shaders/moon.vs", "res/shaders/moon.fs");
+    m_outlineShader = std::make_unique<Shader>("res/shaders/model.vs", "res/shaders/outline.fs");
 }
 
-void Renderer::Render(const Scene &scene, Camera &camera, const Window &window)
+void Renderer::Render(const Scene &scene, const Window &window)
 {
-    glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    const auto &camera = scene.GetSceneCamera();
 
-    glm::mat4 projection = camera.GetProjectionMatrix(window);
-    glm::mat4 view = camera.GetViewMatrix();
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+
+    glEnable(GL_STENCIL_TEST);
+
+    glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+    glm::mat4 projection = camera->GetProjectionMatrix(window);
+    glm::mat4 view = camera->GetViewMatrix();
 
     glPolygonMode(GL_FRONT_AND_BACK, m_wireframe ? GL_LINE : GL_FILL);
 
@@ -53,8 +60,8 @@ void Renderer::Render(const Scene &scene, Camera &camera, const Window &window)
 
     // Spot Light
     {
-        glm::vec3 lightPosView = glm::vec3(view * glm::vec4(camera.GetPosition(), 1.0f));
-        glm::vec3 lightDirView = glm::vec3(view * glm::vec4(camera.GetFront(), 0.0f));
+        glm::vec3 lightPosView = glm::vec3(view * glm::vec4(camera->GetPosition(), 1.0f));
+        glm::vec3 lightDirView = glm::vec3(view * glm::vec4(camera->GetFront(), 0.0f));
 
         m_modelShader->setBool("spotLight.enabled", spotLight.enabled);
         m_modelShader->setVec3("spotLight.position", lightPosView);
@@ -64,21 +71,31 @@ void Renderer::Render(const Scene &scene, Camera &camera, const Window &window)
         m_modelShader->setFloat("spotLight.outerCutOff", glm::cos(glm::radians(spotLight.outerCutOff)));
     }
 
-    for (auto &object : scene.Objects())
+    // Render Light Source
     {
-        m_modelShader->setMat4("model", object.transform);
-        object.model.Draw(*m_modelShader);
+        m_lightShader->Use();
+        m_lightShader->setMat4("view", view);
+        m_lightShader->setMat4("projection", projection);
+        m_lightShader->setVec3("lightColor", scene.GetPointLight().color);
+
+        glm::mat4 model = glm::translate(glm::mat4(1.0f), scene.GetPointLight().position);
+        m_lightShader->setMat4("model", model);
+
+        if (pointLight.enabled)
+            scene.GetPointLight().gizmo->Draw(*m_lightShader);
     }
 
-    // Light Source
-    m_lightShader->Use();
-    m_lightShader->setMat4("view", view);
-    m_lightShader->setMat4("projection", projection);
-    m_lightShader->setVec3("lightColor", scene.GetPointLight().color);
+    {
+        // Render Model
+        m_outlineShader->Use();
+        m_outlineShader->setMat4("view", view);
+        m_outlineShader->setMat4("projection", projection);
 
-    glm::mat4 model = glm::translate(glm::mat4(1.0f), scene.GetPointLight().position);
-    m_lightShader->setMat4("model", model);
+        for (auto &object : scene.Objects())
+        {
+            object.model->DrawWithOutline(*m_modelShader, *m_outlineShader, object.GetModelMatrix());
+        }
 
-    if (pointLight.enabled)
-        scene.GetPointLight().gizmo->Draw(*m_lightShader);
+        glDisable(GL_STENCIL_TEST);
+    }
 }
